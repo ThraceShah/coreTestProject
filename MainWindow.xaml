@@ -1,0 +1,26 @@
+﻿<Window x:Class="TestProject.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestProject"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="460">
+        <Grid>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Margin="10,0,10,0" >
+                <Button x:Name="importexcelBtn" Content="导入BOM" FontSize="36"  Click="ImportexcelBtn_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="stretchBtn" Content="拉伸DXF"  FontSize="36" Click="StretchBtn_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="stretchBtn_Copy" Content="拉伸DWG"  FontSize="36" Click="StretchBtn_Copy_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="gen_Reg" Content="生成规则料"  FontSize="36" Click="Gen_Reg_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="split_fig" Content="按图号拆分excel"  FontSize="24" Click="Split_fig_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+            </StackPanel>
+            <StackPanel Margin="10,0,10,0" >
+                <Button x:Name="dealexcelBtn" Content="清单排版"  FontSize="36" Click="DealexcelBtn_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="outDWG" Content="导出DWG"  FontSize="36" Click="outDWG_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="GetArea" Content="获取面积"  FontSize="36" Click="GetArea_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="GetMeasuer" Content="获取属性"  FontSize="36" Click="btn_GetMass_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+            </StackPanel>
+        </StackPanel>
+        </Grid>
+</Window>

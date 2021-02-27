@@ -15,6 +15,7 @@ using Microsoft.Win32;
 using Connect;
 using System.IO;
 using System.Text;
+using Filedeal;
 
 namespace SolidworksModel
 {
@@ -111,6 +112,89 @@ namespace SolidworksModel
             }
         }
 
+        public static void GetBodyMaxfaceTodwg(string sldprtName)
+        {
+            ModelDoc2 swModel;
+            PartDoc swPart;
+            string sModelName;
+            string sPathName;
+            ISldWorks swApp = Utility.ConnectToSolidWorks();
+            if (swApp != null)
+            {
+                int errors=0;
+                int warnings=0;
+                swModel = swApp.OpenDoc6(sldprtName,1, (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref errors, ref warnings);
+                sModelName = sldprtName;
+                sPathName = sldprtName;
+                sPathName = sPathName.Substring(0, sPathName.Length - 7);
+                if(!Directory.Exists(sPathName))
+                Directory.CreateDirectory(sPathName);
+                string sPartName=Exceldeal.Getfilename(sModelName,7);
+                swPart = (PartDoc)swModel;
+                object[] swBodys = (object[])swPart.GetBodies2(-1, false);
+                HideBodys(ref swBodys, true);
+                foreach (object body in swBodys)
+                {
+                    Body2 swBody = (Body2)body;
+                    string bodyName=swBody.Name;
+                    if(bodyName.Contains("镜向")||bodyName.Contains("阵列")||bodyName.Contains("镜像"))
+                        continue;
+                    swBody.HideBody(false);
+                    GetMaxAreaFace(ref swBody);
+                    swModel.SketchManager.InsertSketch(true);
+                    swModel.SketchManager.InsertSketch(true);
+                    //swModel.ClearSelection2(true);
+                    GetFaceDwg(ref swPart, sModelName, sPathName+"//"+sPartName+"-"+bodyName+".dwg");
+                    swBody.HideBody(true);
+                }
+                //swApp.CloseAllDocuments(true);
+                swApp.CloseDoc(sPartName);
+            }
+        }
+        static void GetFaceDwg(ref PartDoc swPart, string sModelName, string sPathName)
+        {
+            object varAlignment;
+            double[] dataAlignment = new double[12];
+            object varViews;
+            string[] dataViews = new string[1];
+            int options;
+            for (int i = 0; i < 12; i++)
+                dataAlignment[i] = 0.0;
+            varAlignment = dataAlignment;
+            dataViews[0] = "*Current";
+            varViews = dataViews;
+            //Export each annotation view to a separate drawing file
+            swPart.ExportToDWG2(sPathName, sModelName, (int)swExportToDWG_e.swExportToDWG_ExportAnnotationViews, true, varAlignment, true, true, 0, varViews);
+            //Export sheet metal to a single drawing file
+            options = 1;  //include flat-pattern geometry
+            swPart.ExportToDWG2(sPathName, sModelName, (int)swExportToDWG_e.swExportToDWG_ExportSheetMetal, true, varAlignment, false, false, options, null);
+        }
+        public static void HideBodys(ref object[] swBodys, bool status)
+        {
+            foreach (Body2 body in swBodys)
+                body.HideBody(status);
+        }
+        public static void GetMaxAreaFace(ref Body2 swBody)
+        {
+            int faceCount = swBody.GetFaceCount();
+            Face2 swFace = swBody.IGetFirstFace();
+            Face2 maxFace = swFace;
+            double temArea = maxFace.GetArea();
+            for (int i = 1; i < faceCount; i++)
+            {
+                swFace = swFace.IGetNextFace();
+                if (temArea < swFace.GetArea())
+                {
+                    maxFace = swFace;
+                    temArea = swFace.GetArea();
+                }
+            }
+            Entity swEn = (Entity)maxFace;
+            swEn.Select(false);//到這一步就可以選中
+            var edges=maxFace.IGetEdges();
+            var vertex=edges.IGetStartVertex();
+            vertex.IGetPoint();
+        }
         public static void ToDWG(string sldprtName)
         {
             ISldWorks swApp = Utility.ConnectToSolidWorks();
@@ -139,6 +223,7 @@ namespace SolidworksModel
                 }
             }
         }
+
 
         public static double Getarea(string sldprtName)
         {
@@ -194,37 +279,45 @@ namespace SolidworksModel
             {
                 ICell oldCell = oldRow.GetCell(m);
                 ICell newCell = newRow.CreateCell(m);
-                switch (oldCell.CellType)
+                try
                 {
-                    case CellType.Blank:
-                        newCell.SetCellValue(oldCell.StringCellValue);
-                        break;
-                    case CellType.Boolean:
-                        newCell.SetCellValue(oldCell.BooleanCellValue);
-                        break;
-                    case CellType.Error:
-                        newCell.SetCellErrorValue(oldCell.ErrorCellValue);
-                        break;
-                    case CellType.Formula:
-                        try
-                        {
+                    switch (oldCell.CellType)
+                    {
+                        case CellType.Blank:
+                            newCell.SetCellValue(oldCell.StringCellValue);
+                            break;
+                        case CellType.Boolean:
+                            newCell.SetCellValue(oldCell.BooleanCellValue);
+                            break;
+                        case CellType.Error:
+                            newCell.SetCellErrorValue(oldCell.ErrorCellValue);
+                            break;
+                        case CellType.Formula:
+                            try
+                            {
+                                newCell.SetCellValue(oldCell.NumericCellValue);
+                            }
+                            catch (System.Exception)
+                            {
+
+                                newCell.SetCellValue(oldCell.RichStringCellValue);
+                            }
+                            break;
+                        case CellType.Numeric:
                             newCell.SetCellValue(oldCell.NumericCellValue);
-                        }
-                        catch (System.Exception)
-                        {
-                            
+                            break;
+                        case CellType.String:
                             newCell.SetCellValue(oldCell.RichStringCellValue);
-                        }
-                        break;
-                    case CellType.Numeric:
-                        newCell.SetCellValue(oldCell.NumericCellValue);
-                        break;
-                    case CellType.String:
-                        newCell.SetCellValue(oldCell.RichStringCellValue);
-                        break;
-                    case CellType.Unknown:
-                        newCell.SetCellValue(oldCell.StringCellValue);
-                        break;
+                            break;
+                        case CellType.Unknown:
+                            newCell.SetCellValue(oldCell.StringCellValue);
+                            break;
+                    }
+                }
+                catch (System.NullReferenceException)
+                {
+                    newCell.SetCellValue("");
+                    continue;
                 }
                 var newCellStyle = newWorkBook.CreateCellStyle();
                 newCellStyle.CloneStyleFrom(oldCell.CellStyle);
@@ -232,13 +325,13 @@ namespace SolidworksModel
             }
         }
 
-        public static void AutoColumnWidth(NPOI.SS.UserModel.ISheet newSheet,int cols,NPOI.SS.UserModel.ISheet oldSheet)
+        public static void AutoColumnWidth(NPOI.SS.UserModel.ISheet newSheet, int cols, NPOI.SS.UserModel.ISheet oldSheet)
         {
             for (int col = 0; col <= cols; col++)
             {
                 newSheet.AutoSizeColumn(col);//自适应宽度，但是其实还是比实际文本要宽
-                if(oldSheet.IsColumnHidden(col))
-                    newSheet.SetColumnHidden(col,true);
+                if (oldSheet.IsColumnHidden(col))
+                    newSheet.SetColumnHidden(col, true);
             }
         }
     }

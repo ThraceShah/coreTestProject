@@ -20,6 +20,7 @@
                 <Button x:Name="outDWG" Content="导出DWG"  FontSize="36" Click="outDWG_Click" Height="80" Width="200" Margin="0,10,0,10"/>
                 <Button x:Name="GetArea" Content="获取面积"  FontSize="36" Click="GetArea_Click" Height="80" Width="200" Margin="0,10,0,10"/>
                 <Button x:Name="GetMeasuer" Content="获取属性"  FontSize="36" Click="btn_GetMass_Click" Height="80" Width="200" Margin="0,10,0,10"/>
+                <Button x:Name="max_dwg" Content="按最大面导出dwg"  FontSize="24" Click="Max_dwg_Click" Height="80" Width="200" Margin="0,10,0,10"/>
             </StackPanel>
         </StackPanel>
         </Grid>

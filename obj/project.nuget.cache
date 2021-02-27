@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bYPsMrzH1yda2XvyvLvgXy5V6u62rsBcmPQ8KtjBQohUwz4CorZJWM8E5fjTnfvT5MVUWarMcSdgY0ZLv5/zuA==",
+  "dgSpecHash": "O9MHax/11qf7oUrPI5ha/WQ2DLoeK3JTHplTiQGtuRiaIdd1dJoDUbDb5j2c00xkY369mJh2AF6FELyQXdvSyQ==",
   "success": true,
-  "projectFilePath": "n:\\TestProject\\TestProject.csproj",
+  "projectFilePath": "N:\\TestProject\\TestProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Thrace\\.nuget\\packages\\dotnetcore.npoi\\1.2.3\\dotnetcore.npoi.1.2.3.nupkg.sha512",
     "C:\\Users\\Thrace\\.nuget\\packages\\dotnetcore.npoi.core\\1.2.3\\dotnetcore.npoi.core.1.2.3.nupkg.sha512",

@@ -56,14 +56,14 @@ namespace Filedeal
             return pathfile;
         }
 
-        public static string Getfilename(string pathfile)
+        public static string Getfilename(string pathfile,int len)
         {
             string[] tem;
             string temp = "";
             tem = pathfile.Split('\\');
             foreach (string str in tem)
                 temp = str;
-            string filename = temp.Substring(0, temp.Length - 4);
+            string filename = temp.Substring(0, temp.Length - len);
             return filename;
         }
 

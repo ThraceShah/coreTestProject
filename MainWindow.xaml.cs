@@ -159,6 +159,32 @@ namespace TestProject
             MessageBox.Show("运行结束");
         }
 
+        private void Max_dwg_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog folderBrowser = new OpenFileDialog();
+            // Set validate names and check file exists to false otherwise windows will
+            // not let you select "Folder Selection."
+            folderBrowser.ValidateNames = false;
+            folderBrowser.CheckFileExists = false;
+            folderBrowser.CheckPathExists = true;
+            // Always default to Folder Selection.
+            folderBrowser.FileName = "Folder Selection.";
+            if (folderBrowser.ShowDialog() == true)
+            {
+                string folderPath = System.IO.Path.GetDirectoryName(folderBrowser.FileName);
+                Fileusing Filelist = new Fileusing();
+                Filelist.Director(folderPath);
+                foreach (String sldprtName in Filelist.list)
+                {
+                    int start = sldprtName.Length - 6;
+                    //MessageBox.Show(sldprtName.Substring(start, 6));
+                    if (sldprtName.Substring(start, 6) == "sldprt" || sldprtName.Substring(start, 6) == "SLDPRT")
+                        Solution.GetBodyMaxfaceTodwg(sldprtName);
+                }
+            }
+            MessageBox.Show("运行结束");
+        }
+
         private void GetArea_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog folderBrowser = new OpenFileDialog();
@@ -185,7 +211,7 @@ namespace TestProject
                     if (sldprtName.Substring(start, 3) == "dwg" || sldprtName.Substring(start, 3) == "DWG" || sldprtName.Substring(start, 3) == "dxf" || sldprtName.Substring(start, 3) == "DXF")
                     {
                         row.CreateCell(1).SetCellValue(Solution.Getarea(sldprtName) * 1000000);
-                        row.CreateCell(0).SetCellValue(Exceldeal.Getfilename(sldprtName));
+                        row.CreateCell(0).SetCellValue(Exceldeal.Getfilename(sldprtName,4));
                         i++;
                     }
                 }
